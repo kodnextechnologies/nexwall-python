@@ -166,6 +166,7 @@ On your own computer, an environment variable is fine. If you build a web app or
 - [Flutter wallpaper app](https://github.com/kodnextechnologies/nexwall-flutter-wallpaper-app)
 - [Android Kotlin wallpaper app (Jetpack Compose)](https://github.com/kodnextechnologies/nexwall-android-kotlin-wallpaper-app)
 - [React Native / Expo wallpaper app](https://github.com/kodnextechnologies/nexwall-react-native-expo-wallpaper-app)
+- [Web starter: Next.js / React, Laravel and plain JavaScript (API key kept server-side)](https://github.com/kodnextechnologies/nexwall-web-starter)
 
 ## License
 
