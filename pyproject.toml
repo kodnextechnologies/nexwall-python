@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexwall"
+version = "0.1.0"
+description = "Tiny Python client and CLI for the NexWall free wallpaper API (categories, search, random wallpaper, downloads)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "KodNex" }]
+dependencies = ["requests>=2.25"]
+keywords = ["wallpaper", "wallpaper-api", "free-api", "nexwall", "desktop-wallpaper", "rest-api", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Topic :: Desktop Environment",
+    "Topic :: Internet :: WWW/HTTP",
+]
+
+[project.urls]
+Homepage = "https://nexwall.kodnextech.com/wallpaper-api/free-wallpaper-api"
+Documentation = "https://nexwall.kodnextech.com/wallpaper-api/docs"
+Source = "https://github.com/kodnextechnologies/nexwall-python"
+
+[project.scripts]
+nexwall = "nexwall.cli:main"
