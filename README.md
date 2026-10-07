@@ -170,6 +170,6 @@ On your own computer, an environment variable is fine. If you build a web app or
 
 ## License
 
-The source code is released under the [MIT License](LICENSE).
+The source code is released under the [MIT License](https://github.com/kodnextechnologies/nexwall-python/blob/main/LICENSE).
 
 Wallpaper images and videos returned by the API are **not** covered by the MIT license. Their use, including use as desktop backgrounds, is governed by the [NexWall Developer API License](https://nexwall.kodnextech.com/wallpaper-api/license).
