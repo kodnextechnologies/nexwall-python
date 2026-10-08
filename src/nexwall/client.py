@@ -10,6 +10,8 @@ import requests
 
 DEFAULT_BASE_URL = "https://nexwall.kodnextech.com/api/developer/v1"
 REGISTER_URL = "https://nexwall.kodnextech.com/developers/register"
+# The host's firewall rejects the default python-requests User-Agent (HTTP 444), so always identify the client.
+USER_AGENT = "nexwall-python/0.2.0 (+https://github.com/kodnextechnologies/nexwall-python)"
 
 Wallpaper = Dict[str, Any]
 
@@ -60,8 +62,6 @@ class NexWallClient:
         session: Optional[requests.Session] = None,
     ):
         self.api_key = api_key or os.environ.get("NEXWALL_API_KEY", "")
-        if not self.api_key:
-            raise AuthError(401, f"No API key. Set NEXWALL_API_KEY (free key: {REGISTER_URL})")
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.session = session or requests.Session()
@@ -71,6 +71,23 @@ class NexWallClient:
         self.rate_limit: Dict[str, Optional[str]] = {}
 
     # -- endpoints ---------------------------------------------------------
+
+    def demo(
+        self,
+        per_page: int = 10,
+        category_id: Optional[int] = None,
+        search: Optional[str] = None,
+        sort: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """``GET /demo/wallpapers`` - up to 10 free wallpapers, no API key needed.
+
+        Limited to 10 requests/minute and 30/day per IP. Use a key for everything else.
+        """
+        return self._get(
+            "/demo/wallpapers",
+            {"per_page": per_page, "category_id": category_id, "search": search, "sort": sort},
+            keyless=True,
+        )
 
     def categories(self) -> List[Dict[str, Any]]:
         """``GET /categories`` - categories available on your plan."""
@@ -146,7 +163,7 @@ class NexWallClient:
         target.parent.mkdir(parents=True, exist_ok=True)
 
         # The API key is only sent to the API, never to the image host.
-        with requests.get(url, stream=True, timeout=self.timeout) as response:
+        with requests.get(url, stream=True, timeout=self.timeout, headers={"User-Agent": USER_AGENT}) as response:
             response.raise_for_status()
             tmp = target.with_name(target.name + ".part")
             with open(tmp, "wb") as fh:
@@ -155,12 +172,17 @@ class NexWallClient:
             tmp.replace(target)
         return target
 
-    def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def _get(self, path: str, params: Optional[Dict[str, Any]] = None, keyless: bool = False) -> Dict[str, Any]:
+        if not keyless and not self.api_key:
+            raise AuthError(401, f"No API key. Set NEXWALL_API_KEY (free key: {REGISTER_URL}) or try demo()")
         clean = {k: v for k, v in (params or {}).items() if v is not None and v != ""}
+        headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
+        if not keyless:
+            headers["Authorization"] = f"Bearer {self.api_key}"
         response = self.session.get(
             self.base_url + path,
             params=clean,
-            headers={"Authorization": f"Bearer {self.api_key}", "Accept": "application/json"},
+            headers=headers,
             timeout=self.timeout,
         )
 

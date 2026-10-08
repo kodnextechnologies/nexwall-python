@@ -28,6 +28,14 @@ def _maybe_download(client: NexWallClient, wallpaper: dict, path: Optional[str])
 def _run(args: argparse.Namespace) -> Any:
     client = NexWallClient(api_key=args.api_key)
 
+    if args.command == "demo":
+        page = client.demo(per_page=args.per_page, category_id=args.category, search=args.search, sort=args.sort)
+        if args.json:
+            return page
+        _print_wallpapers(page["data"])
+        print(f"\nKeyless demo. Get a free API key for more: {REGISTER_URL}", file=sys.stderr)
+        return None
+
     if args.command == "categories":
         categories = client.categories()
         if args.json:
@@ -75,7 +83,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="nexwall",
         description="NexWall free wallpaper API from the command line. "
-        f"Set NEXWALL_API_KEY first (free key: {REGISTER_URL}).",
+        f"Try `nexwall demo` without a key, or set NEXWALL_API_KEY (free key: {REGISTER_URL}).",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
@@ -85,6 +93,12 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument("--json", action="store_true", help="print raw JSON")
 
     sub = parser.add_subparsers(dest="command", required=True)
+
+    p_demo = sub.add_parser("demo", parents=[common], help="try up to 10 free wallpapers without an API key")
+    p_demo.add_argument("--category", type=int, help="category id")
+    p_demo.add_argument("--search", help="tag search, 2-100 characters")
+    p_demo.add_argument("--sort", choices=["newest", "popular", "random"], default="newest")
+    p_demo.add_argument("--per-page", type=int, default=10, help="1-10")
 
     sub.add_parser("categories", parents=[common], help="list categories available on your plan")
 

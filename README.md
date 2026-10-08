@@ -32,6 +32,22 @@ Saved wall.jpg
 
 ## Quick start
 
+### Try it without a key
+
+```bash
+pip install nexwall
+nexwall demo --sort random --per-page 5
+```
+
+```python
+from nexwall import NexWallClient
+
+for w in NexWallClient().demo(per_page=5, sort="random")["data"]:
+    print(w["image_url"])
+```
+
+The demo returns up to 10 free wallpapers with no API key (10 requests/minute, 30/day per IP). For pagination, downloads at scale and every other command, use a free key.
+
 ### 1. Get a free API key
 
 Sign up at **https://nexwall.kodnextech.com/developers/register**. The free plan needs no credit card.
@@ -41,9 +57,15 @@ Sign up at **https://nexwall.kodnextech.com/developers/register**. The free plan
 Requires Python 3.9+.
 
 ```bash
+pip install nexwall
+```
+
+Or from source:
+
+```bash
 git clone https://github.com/kodnextechnologies/nexwall-python.git
 cd nexwall-python
-pip install .            # or: pip install -e .  for development
+pip install -e .
 ```
 
 Set your key as an environment variable (see `.env.example`; never commit it):
@@ -53,8 +75,6 @@ export NEXWALL_API_KEY=your_key_here          # macOS / Linux
 setx NEXWALL_API_KEY your_key_here            # Windows (new terminals)
 $env:NEXWALL_API_KEY = "your_key_here"        # Windows PowerShell (current session)
 ```
-
-The package is not on PyPI yet. The `pyproject.toml` is ready for publishing as `nexwall` later; until then, install from source as shown above.
 
 ### 3. Run
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nexwall"
-version = "0.1.0"
+version = "0.2.0"
 description = "Tiny Python client and CLI for the NexWall free wallpaper API (categories, search, random wallpaper, downloads)."
 readme = "README.md"
 requires-python = ">=3.9"

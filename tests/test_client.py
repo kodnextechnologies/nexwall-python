@@ -6,7 +6,7 @@ Run with:  python -m unittest discover -s tests
 import unittest
 from unittest import mock
 
-from nexwall import NexWallClient, RateLimitError
+from nexwall import AuthError, NexWallClient, RateLimitError
 from nexwall.cli import main
 
 
@@ -46,6 +46,21 @@ class ClientTests(unittest.TestCase):
         _, kwargs = session.get.call_args
         self.assertEqual(kwargs["headers"]["Authorization"], "Bearer test-key")
         self.assertEqual(kwargs["params"], {"page": 1, "per_page": 1, "category_id": 5, "type": "image", "sort": "random"})
+
+    def test_demo_works_without_key_and_never_sends_one(self):
+        session = mock.Mock()
+        session.get.return_value = fake_response(body={"demo": True, "data": [{"id": 3}], "plan": "free"})
+        with mock.patch.dict("os.environ", {}, clear=True):
+            client = NexWallClient(session=session)
+            body = client.demo(per_page=5, sort="random")
+            with self.assertRaises(AuthError):
+                client.categories()
+
+        self.assertEqual(body["data"][0]["id"], 3)
+        args, kwargs = session.get.call_args
+        self.assertTrue(args[0].endswith("/demo/wallpapers"))
+        self.assertNotIn("Authorization", kwargs["headers"])
+        self.assertEqual(kwargs["params"], {"per_page": 5, "sort": "random"})
 
     def test_429_raises_rate_limit_error(self):
         client, _ = self.make_client(
